@@ -86,6 +86,7 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 8;
+    max-height: calc(1.6em * 8);
 }
 
 .entry-footer {
