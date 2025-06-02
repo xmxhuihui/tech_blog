@@ -7,7 +7,7 @@ cover:
   # can also paste direct link from external site
   # ex. https://i.ibb.co/K0HVPBd/paper-mod-profilemode.png
   alt: "Ollama"
-  caption: "Ollama"
+  caption: ""
   relative: false # To use relative path for cover image, used in hugo Page-bundles
   responsiveImages: false
 ---
