@@ -2,6 +2,14 @@
 date: '2025-05-26T11:30:40+01:00'
 draft: false
 title: 'Full process of deploying deepseek on remote server'
+cover:
+  image: "ollama.png"
+  # can also paste direct link from external site
+  # ex. https://i.ibb.co/K0HVPBd/paper-mod-profilemode.png
+  alt: "Ollama"
+  caption: "Ollama"
+  relative: false # To use relative path for cover image, used in hugo Page-bundles
+  responsiveImages: false
 ---
 云平台：AutoDL
 模型加载工具：Ollama

@@ -5,3 +5,27 @@ theme: ["PaperMod"]
 caches:
   images:
     dir: :cacheDir/images
+params:
+  defaultTheme: auto
+  homeInfoParams:
+    Title: Hi there wave
+    Content: Can be Info, links, about...
+menu:
+  main:
+    - identifier: home
+      name: home
+      url: /
+      weight: 1
+    - identifier: archives
+      name: archives
+      url: /archives/
+      weight: 10
+    - identifier: search
+      name: search
+      url: /search/
+      weight: 20
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON # necessary for search
