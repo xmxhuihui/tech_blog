@@ -5,11 +5,21 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>Posts | xmxhuihui Tech Blog</title>
+<title>Loading Lora Weights in Stable Diffusion Model | xmxhuihui Tech Blog</title>
 <meta name="keywords" content="">
-<meta name="description" content="Posts - xmxhuihui Tech Blog">
+<meta name="description" content="LoRAs also need to be used with another model:
+from diffusers import AutoPipelineForText2Image
+import torch
+
+pipeline = AutoPipelineForText2Image.from_pretrained(&#34;stabilityai/stable-diffusion-xl-base-1.0&#34;, torch_dtype=torch.float16).to(&#34;cuda&#34;)
+Then use the load_lora_weights() method to load the ostris/super-cereal-sdxl-lora weights and specify the weights filename from the repository:
+pipeline.load_lora_weights(&#34;ostris/super-cereal-sdxl-lora&#34;, weight_name=&#34;cereal_box_sdxl_v1.safetensors&#34;)
+prompt = &#34;bears, pizza bites&#34;
+image = pipeline(prompt).images[0]
+image
+Replace the Model and the Lora weights file and folder in the code.">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/posts/">
+<link rel="canonical" href="http://localhost:1313/posts/loading-lora-weights-in-stable-diffusion-model/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.d04591b9c6960aad770f8b3f9890cd412d431ce2660260d4ede922bf020277be.css" integrity="sha256-0EWRucaWCq13D4s/mJDNQS1DHOJmAmDU7ekivwICd74=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -18,8 +28,7 @@
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/posts/index.xml">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/loading-lora-weights-in-stable-diffusion-model/">
 <noscript>
     <style>
         #theme-toggle,
@@ -59,7 +68,7 @@
 </noscript>
 </head>
 
-<body class="list" id="top">
+<body class="" id="top">
 <script>
     if (localStorage.getItem("pref-theme") === "dark") {
         document.body.classList.add('dark');
@@ -117,75 +126,38 @@
         </ul>
     </nav>
 </header>
-<main class="main"> 
-<header class="page-header">
-  <h1>
-    Posts
-  </h1>
-</header>
+<main class="main">
 
-<article class="post-entry post-entry-custom">
-  <div class="entry-left"> 
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Loading Lora Weights in Stable Diffusion Model
+    </h1>
+    <div class="post-meta"><span title='2025-06-06 17:15:32 +0100 BST'>June 6, 2025</span>
+
+</div>
+  </header> 
+  <div class="post-content"><p>LoRAs also need to be used with another model:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> diffusers <span style="color:#f92672">import</span> AutoPipelineForText2Image
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> torch
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>pipeline <span style="color:#f92672">=</span> AutoPipelineForText2Image<span style="color:#f92672">.</span>from_pretrained(<span style="color:#e6db74">&#34;stabilityai/stable-diffusion-xl-base-1.0&#34;</span>, torch_dtype<span style="color:#f92672">=</span>torch<span style="color:#f92672">.</span>float16)<span style="color:#f92672">.</span>to(<span style="color:#e6db74">&#34;cuda&#34;</span>)
+</span></span></code></pre></div><p>Then use the load_lora_weights() method to load the ostris/super-cereal-sdxl-lora weights and specify the weights filename from the repository:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>pipeline<span style="color:#f92672">.</span>load_lora_weights(<span style="color:#e6db74">&#34;ostris/super-cereal-sdxl-lora&#34;</span>, weight_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;cereal_box_sdxl_v1.safetensors&#34;</span>)
+</span></span><span style="display:flex;"><span>prompt <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;bears, pizza bites&#34;</span>
+</span></span><span style="display:flex;"><span>image <span style="color:#f92672">=</span> pipeline(prompt)<span style="color:#f92672">.</span>images[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>image
+</span></span></code></pre></div><p>Replace the <!-- raw HTML omitted -->Model<!-- raw HTML omitted --> and the <!-- raw HTML omitted -->Lora weights file and folder <!-- raw HTML omitted -->in the code.</p>
+
+
   </div>
-  <div class="entry-right">
-    <header class="entry-header">
-      <h2 class="entry-hint-parent">SD3.5 ControlNet Pitfall
-      </h2>
-    </header>
-  <div class="entry-content">
-    <p>Bash prompt for training a ControlNet on Stable Diffusion v3.5
-export MODEL_DIR=&#34;stabilityai/stable-diffusion-3.5-medium&#34; export OUTPUT_DIR=&#34;sd3-controlnet-out&#34; accelerate launch train_controlnet_sd3.py \ --pretrained_model_name_or_path=$MODEL_DIR \ --output_dir=$OUTPUT_DIR \ --dataset_name=&#34;&#34;fusing/fill50k&#34; \ --resolution=1024 \ --learning_rate=1e-5 \ --max_train_steps=15000 \ --validation_image &#34;./conditioning_image_1.png&#34; &#34;./conditioning_image_2.png&#34; \ --validation_prompt &#34;red circle with blue background&#34; &#34;cyan circle with brown floral background&#34; \ --validation_steps=100 \ --train_batch_size=1 \ --gradient_accumulation_steps=4 </p>
-  </div>
-  <footer class="entry-footer"><span title='2025-06-06 22:23:27 +0100 BST'>June 6, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to SD3.5 ControlNet Pitfall" href="http://localhost:1313/posts/sd3.5-controlnet-pitfall/"></a>
-  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
 </article>
-
-<article class="post-entry post-entry-custom">
-  <div class="entry-left"> 
-  </div>
-  <div class="entry-right">
-    <header class="entry-header">
-      <h2 class="entry-hint-parent">Loading Lora Weights in Stable Diffusion Model
-      </h2>
-    </header>
-  <div class="entry-content">
-    <p>LoRAs also need to be used with another model:
-from diffusers import AutoPipelineForText2Image import torch pipeline = AutoPipelineForText2Image.from_pretrained(&#34;stabilityai/stable-diffusion-xl-base-1.0&#34;, torch_dtype=torch.float16).to(&#34;cuda&#34;) Then use the load_lora_weights() method to load the ostris/super-cereal-sdxl-lora weights and specify the weights filename from the repository:
-pipeline.load_lora_weights(&#34;ostris/super-cereal-sdxl-lora&#34;, weight_name=&#34;cereal_box_sdxl_v1.safetensors&#34;) prompt = &#34;bears, pizza bites&#34; image = pipeline(prompt).images[0] image Replace the Model and the Lora weights file and folder in the code.
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-06-06 17:15:32 +0100 BST'>June 6, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Loading Lora Weights in Stable Diffusion Model" href="http://localhost:1313/posts/loading-lora-weights-in-stable-diffusion-model/"></a>
-  </div>
-</article>
-
-<article class="post-entry post-entry-custom">
-  <div class="entry-left"> 
-<figure class="entry-cover">
-            <img loading="lazy" src="http://localhost:1313/posts/full-process-of-deploying-deepseek-on-remote-server/ollama.png" alt="Ollama">
-</figure>
-  </div>
-  <div class="entry-right">
-    <header class="entry-header">
-      <h2 class="entry-hint-parent">Full process of deploying deepseek on remote server
-      </h2>
-    </header>
-  <div class="entry-content">
-    <p>云平台：AutoDL 模型加载工具：Ollama 参考：https://github.com/ollama/ollama/blob/main/docs/linux.md
-下载Ollama 服务器上下载ollama比较慢，因此我使用浏览器先下载到本地电脑上。
-https://ollama.com/download/ollama-linux-amd64.tgz复制到浏览器进行下载 下载好以后，使用FileZilla等工具上传到云服务器上，这里我上传到autodl-tmp文件夹下。 打开一个terminal，解压下载的文件包：
-tar -C /usr -xzf ollama-linux-amd64.tgz 启用ollama ollama serve 再打开一个terminal，检查一下ollama是否启用 ollama -v 这里可以看到ollama版本，说明启用成功。 拉取模型 这里以deepseek-r1:32b为例进行拉取
-ollama pull deepseek-r1:32b 下载过程中可能有掉速，Ctrl&#43;C掉以后再重新ollama pull可以继续下载。 下载完成以后可以查看一下模型列表：
-ollama list 运行模型：
-ollama run deepseek-r1:32b 测试了一个很常见的，却有许多模型答错的问题：9.11和9.9比大小 这个模型的链式推理很有人味儿，很有吸引力，这可能就是这个模型受很多人关注和称赞的原因吧
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-05-26 11:30:40 +0100 BST'>May 26, 2025</span></footer>
-  <a class="entry-link" aria-label="post link to Full process of deploying deepseek on remote server" href="http://localhost:1313/posts/full-process-of-deploying-deepseek-on-remote-server/"></a>
-  </div>
-</article>
-
     </main>
     
 <footer class="footer">

@@ -6,8 +6,48 @@
     <description>Recent content in Posts on xmxhuihui Tech Blog</description>
     <generator>Hugo -- 0.147.5</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 26 May 2025 11:30:40 +0100</lastBuildDate>
+    <lastBuildDate>Fri, 06 Jun 2025 22:23:27 +0100</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SD3.5 ControlNet Pitfall</title>
+      <link>http://localhost:1313/posts/sd3.5-controlnet-pitfall/</link>
+      <pubDate>Fri, 06 Jun 2025 22:23:27 +0100</pubDate>
+      <guid>http://localhost:1313/posts/sd3.5-controlnet-pitfall/</guid>
+      <description>&lt;p&gt;Bash prompt for training a ControlNet on Stable Diffusion v3.5&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;export MODEL_DIR&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;stabilityai/stable-diffusion-3.5-medium&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;export OUTPUT_DIR&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sd3-controlnet-out&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;accelerate launch train_controlnet_sd3.py &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    --pretrained_model_name_or_path&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$MODEL_DIR &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    --output_dir&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$OUTPUT_DIR &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    --dataset_name&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;fusing/fill50k&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; \
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    --resolution=1024 \
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    --learning_rate=1e-5 \
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    --max_train_steps=15000 \
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    --validation_image &amp;#34;&lt;/span&gt;./conditioning_image_1.png&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt;./conditioning_image_2.png&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; \
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    --validation_prompt &amp;#34;&lt;/span&gt;red circle with blue background&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; &amp;#34;&lt;/span&gt;cyan circle with brown floral background&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; \
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    --validation_steps=100 \
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    --train_batch_size=1 \
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    --gradient_accumulation_steps=4
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
+    <item>
+      <title>Loading Lora Weights in Stable Diffusion Model</title>
+      <link>http://localhost:1313/posts/loading-lora-weights-in-stable-diffusion-model/</link>
+      <pubDate>Fri, 06 Jun 2025 17:15:32 +0100</pubDate>
+      <guid>http://localhost:1313/posts/loading-lora-weights-in-stable-diffusion-model/</guid>
+      <description>&lt;p&gt;LoRAs also need to be used with another model:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; diffusers &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; AutoPipelineForText2Image
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; torch
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pipeline &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; AutoPipelineForText2Image&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;from_pretrained(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;stabilityai/stable-diffusion-xl-base-1.0&amp;#34;&lt;/span&gt;, torch_dtype&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;torch&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;float16)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;to(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;cuda&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Then use the load_lora_weights() method to load the ostris/super-cereal-sdxl-lora weights and specify the weights filename from the repository:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pipeline&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load_lora_weights(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ostris/super-cereal-sdxl-lora&amp;#34;&lt;/span&gt;, weight_name&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;cereal_box_sdxl_v1.safetensors&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;prompt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;bears, pizza bites&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;image &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pipeline(prompt)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;images[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;image
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Replace the &lt;!-- raw HTML omitted --&gt;Model&lt;!-- raw HTML omitted --&gt; and the &lt;!-- raw HTML omitted --&gt;Lora weights file and folder &lt;!-- raw HTML omitted --&gt;in the code.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Full process of deploying deepseek on remote server</title>
       <link>http://localhost:1313/posts/full-process-of-deploying-deepseek-on-remote-server/</link>
