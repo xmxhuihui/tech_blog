@@ -21,3 +21,6 @@ accelerate launch train_controlnet_sd3.py \
     --train_batch_size=1 \
     --gradient_accumulation_steps=4
 ```
+
+Full tutorials should be referred in the "diffusers" github page:
+https://github.com/huggingface/diffusers/blob/main/examples/controlnet/README_sd3.md
