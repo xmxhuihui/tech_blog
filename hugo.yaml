@@ -8,7 +8,7 @@ caches:
 params:
   defaultTheme: auto
   homeInfoParams:
-    Title: A pure tech=enthusiast who knows a little about technology
+    Title: A pure tech-enthusiast who knows a little about technology
     Content: This blog posts my experience, finding and summarize pitfalls while trying different projects. Hope this blog could help you in some ways.
 menu:
   main:
