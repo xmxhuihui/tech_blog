@@ -8,8 +8,8 @@ caches:
 params:
   defaultTheme: auto
   homeInfoParams:
-    Title: Hi there wave
-    Content: Can be Info, links, about...
+    Title: A pure tech=enthusiast who knows a little about technology
+    Content: This blog posts my experience, finding and summarize pitfalls while trying different projects. Hope this blog could help you in some ways.
 menu:
   main:
     - identifier: home
