@@ -2,13 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2025-06-06T22:23:27+01:00</lastmod>
+    <loc>http://localhost:1313/posts/hunyuan3d-2.1-pitfall/hunyuan3d-2.1-pitfall/</loc>
+    <lastmod>2025-06-20T13:33:23+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/sd3.5-controlnet-pitfall/</loc>
-    <lastmod>2025-06-06T22:23:27+01:00</lastmod>
+    <loc>http://localhost:1313/posts/</loc>
+    <lastmod>2025-06-20T13:33:23+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/</loc>
+    <lastmod>2025-06-20T13:33:23+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/git-command-summarization/git-command-summarization/</loc>
+    <lastmod>2025-06-17T17:11:20+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/blender-camera-animation/</loc>
+    <lastmod>2025-06-09T21:26:24+01:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/sd3.5-controlnet-pitfall/</loc>
     <lastmod>2025-06-06T22:23:27+01:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/loading-lora-weights-in-stable-diffusion-model/</loc>

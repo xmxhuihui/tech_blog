@@ -122,10 +122,10 @@
 <main class="main"> 
 <article class="first-entry home-info">
     <header class="entry-header">
-        <h1>Hi there wave</h1>
+        <h1>A pure tech-enthusiast who knows a little about technology</h1>
     </header>
     <div class="entry-content">
-        Can be Info, links, about&hellip;
+        This blog posts my experience, finding and summarize pitfalls while trying different projects. Hope this blog could help you in some ways.
     </div>
     <footer class="entry-footer">
         <div class="social-icons" >
@@ -139,12 +139,85 @@
   </div>
   <div class="entry-right">
     <header class="entry-header">
+      <h2 class="entry-hint-parent">Hunyuan3D-2.1 Pitfall
+      </h2>
+    </header>
+  <div class="entry-content">
+    <p>Hunyuan3D-2.1加入了对PBR material的支持，以下是我在尝试该项目时遇到的问题和解决方法的总结。
+Troubleshooting:
+ImportError: libSM.so.6: cannot open shared object file: No such file or directory Ubuntu系统上的解决方案：
+sudo apt update sudo apt install libsm6 libxrender1 libxext6 Other install packages
+pip install sentencepiece # download the hy3dgen for txt2img from Hunyuan3D-2 分享一下改进后的img-to-3D demo.py
+import sys sys.path.insert(0, &#39;./hy3dshape&#39;) sys.path.insert(0, &#39;./hy3dpaint&#39;) from PIL import Image from hy3dshape.rembg import BackgroundRemover from hy3dshape.pipelines import Hunyuan3DDiTFlowMatchingPipeline import os from textureGenPipeline import Hunyuan3DPaintPipeline, Hunyuan3DPaintConfig try: from torchvision_fix import apply_fix apply_fix() except ImportError: print(&#34;Warning: torchvision_fix module not found, proceeding without compatibility fix&#34;) except Exception as e: print(f&#34;Warning: Failed to apply torchvision fix: {e}&#34;) # shape model_path = &#39;tencent/Hunyuan3D-2.1&#39; pipeline_shapegen = Hunyuan3DDiTFlowMatchingPipeline.from_pretrained(model_path) image_path = &#39;assets/example_images/mmexportde235211f304fd83ec9d60e38c9f6f0b_1747975667632.png&#39; filename = os.path.basename(image_path).split(&#39;.&#39;)[0] image = Image.open(image_path).convert(&#34;RGBA&#34;) if image.mode == &#39;RGB&#39;: rembg = BackgroundRemover() image = rembg(image) save_folder = os.path.join(&#39;output&#39;, filename) os.makedirs(save_folder, exist_ok=True) mesh = pipeline_shapegen(image=image)[0] mesh.export(os.path.join(output_folder, filename &#43; &#39;.glb&#39;)) # paint max_num_view = 6 # can be 6 to 9 resolution = 512 # can be 768 or 512 conf = Hunyuan3DPaintConfig(max_num_view, resolution) conf.realesrgan_ckpt_path = &#34;hy3dpaint/ckpt/RealESRGAN_x4plus.pth&#34; conf.multiview_cfg_path = &#34;hy3dpaint/cfgs/hunyuan-paint-pbr.yaml&#34; conf.custom_pipeline = &#34;hy3dpaint/hunyuanpaintpbr&#34; paint_pipeline = Hunyuan3DPaintPipeline(conf) output_mesh_path = filename &#43; &#39;_textured.glb&#39; output_mesh_path = paint_pipeline( mesh_path = os.path.join(output_folder, filename &#43; &#39;.glb&#39;), image_path = image_path, output_mesh_path = os.path.join(output_folder, output_mesh_path) ) 以及txt-to-3D_demo.py
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-06-20 13:33:23 +0100 BST'>June 20, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to Hunyuan3D-2.1 Pitfall" href="http://localhost:1313/posts/hunyuan3d-2.1-pitfall/hunyuan3d-2.1-pitfall/"></a>
+  </div>
+</article>
+
+<article class="post-entry post-entry-custom">
+  <div class="entry-left"> 
+  </div>
+  <div class="entry-right">
+    <header class="entry-header">
+      <h2 class="entry-hint-parent">Git Command Summarization
+      </h2>
+    </header>
+  <div class="entry-content">
+    <p>Git 创建仓库并同步到远程仓库 初始化 git init 添加仓库 git remote add origin git@github.com:username/xxx.git git remote remove origin git remote set-url &lt;REMOTE-NAME&gt; &lt;NEW-URL&gt; git remote rename &lt;old-name&gt; &lt;new-name&gt; 查看远程 git remote -v / git remote remove origin 创建新分支 git branch 查看本地分支 git branch -a 查看远程、本地所有分支 git branch -m new_branch_name 创建空分支 git checkout --orphan new_branch_name git reset &amp; git clean -fdx git commit --allow-empty -m &#34;Initial commit&#34; 提交仓库 git status git add . git commit -m &#39;commit_message&#39; git push/pull origin local_branch:remote_branch 分支操作 git push -u origin &lt;remote_branch_name&gt; git push --set-upstream origin &lt;remote_branch_name&gt; # 设置本地分支关联的远程分支 git checkout &lt;branch_name&gt; # 切换本地分支 git checkout -b &lt;branch_name&gt; # 创建一个本地远程分支 git branch -v # 查看本地分支信息 git branch -r # 查看远程分支 git branch -a # 查看全部分支 git branch -vv # 查看关联分支信息 远程仓库多分支条件下，git clone只会克隆主分支。如果想要克隆其他分支：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-06-17 17:11:20 +0100 BST'>June 17, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to Git Command Summarization" href="http://localhost:1313/posts/git-command-summarization/git-command-summarization/"></a>
+  </div>
+</article>
+
+<article class="post-entry post-entry-custom">
+  <div class="entry-left"> 
+  </div>
+  <div class="entry-right">
+    <header class="entry-header">
+      <h2 class="entry-hint-parent">Blender Camera Animation
+      </h2>
+    </header>
+  <div class="entry-content">
+    <p>在 Blender 中给摄像机添加环绕物体一周的动作，常用方法是： ✅ 方法一：使用「空物体」控制摄像机环绕运动（推荐） 添加空物体 Empty：
+在 3D 视图中按 Shift &#43; A → 空物体（Empty） → Plain Axes。
+把它放在你想环绕的物体中心（或目标）上。
+设置摄像机的父对象：
+选中摄像机，然后 Shift 选中空物体。
+按 Ctrl &#43; P → 选择 Object (对象) 进行父子关系绑定。
+现在移动或旋转空物体，摄像机会跟着动。
+让空物体旋转：
+选中空物体。
+在时间轴开始帧设置初始旋转（如 Z 轴为 0°），按 I → Rotation 插入关键帧。
+移动到结束帧（如帧 120），将空物体 Z 轴旋转设为 360°，再按 I → Rotation。
+播放时，摄像机会随空物体环绕目标旋转一圈。
+（可选）设置摄像机总是朝向目标：
+选中摄像机，在「约束（Constraints）」面板中添加 Track To 约束。
+设置目标为你想要围绕的对象（或同一个 Empty）。
+设置 Track Axis 为 -Z，Up Axis 为 Y。
+✅ 方法二：直接使用路径 Path 控制 添加曲线路径：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-06-09 21:26:24 +0100 BST'>June 9, 2025</span></footer>
+  <a class="entry-link" aria-label="post link to Blender Camera Animation" href="http://localhost:1313/posts/blender-camera-animation/"></a>
+  </div>
+</article>
+
+<article class="post-entry post-entry-custom">
+  <div class="entry-left"> 
+  </div>
+  <div class="entry-right">
+    <header class="entry-header">
       <h2 class="entry-hint-parent">SD3.5 ControlNet Pitfall
       </h2>
     </header>
   <div class="entry-content">
     <p>Bash prompt for training a ControlNet on Stable Diffusion v3.5
-export MODEL_DIR=&#34;stabilityai/stable-diffusion-3.5-medium&#34; export OUTPUT_DIR=&#34;sd3-controlnet-out&#34; accelerate launch train_controlnet_sd3.py \ --pretrained_model_name_or_path=$MODEL_DIR \ --output_dir=$OUTPUT_DIR \ --dataset_name=&#34;&#34;fusing/fill50k&#34; \ --resolution=1024 \ --learning_rate=1e-5 \ --max_train_steps=15000 \ --validation_image &#34;./conditioning_image_1.png&#34; &#34;./conditioning_image_2.png&#34; \ --validation_prompt &#34;red circle with blue background&#34; &#34;cyan circle with brown floral background&#34; \ --validation_steps=100 \ --train_batch_size=1 \ --gradient_accumulation_steps=4 </p>
+export MODEL_DIR=&#34;stabilityai/stable-diffusion-3.5-medium&#34; export OUTPUT_DIR=&#34;sd3-controlnet-out&#34; accelerate launch train_controlnet_sd3.py \ --pretrained_model_name_or_path=$MODEL_DIR \ --output_dir=$OUTPUT_DIR \ --dataset_name=&#34;&#34;fusing/fill50k&#34; \ --resolution=1024 \ --learning_rate=1e-5 \ --max_train_steps=15000 \ --validation_image &#34;./conditioning_image_1.png&#34; &#34;./conditioning_image_2.png&#34; \ --validation_prompt &#34;red circle with blue background&#34; &#34;cyan circle with brown floral background&#34; \ --validation_steps=100 \ --train_batch_size=1 \ --gradient_accumulation_steps=4 Full tutorials should be referred in the “diffusers” github page: https://github.com/huggingface/diffusers/blob/main/examples/controlnet/README_sd3.md
+...</p>
   </div>
   <footer class="entry-footer"><span title='2025-06-06 22:23:27 +0100 BST'>June 6, 2025</span></footer>
   <a class="entry-link" aria-label="post link to SD3.5 ControlNet Pitfall" href="http://localhost:1313/posts/sd3.5-controlnet-pitfall/"></a>

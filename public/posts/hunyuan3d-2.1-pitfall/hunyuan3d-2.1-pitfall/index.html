@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Hunyuan3D-2.1 Pitfall | xmxhuihui Tech Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="Hunyuan3D-2.1加入了对PBR material的支持，以下是我在尝试该项目时遇到的问题和解决方法的总结。
+Troubleshooting:
+ImportError: libSM.so.6: cannot open shared object file: No such file or directory
+Ubuntu系统上的解决方案：
+sudo apt update
+sudo apt install libsm6 libxrender1 libxext6
+Other install packages
+pip install sentencepiece
+# download the hy3dgen for txt2img from Hunyuan3D-2
+分享一下改进后的img-to-3D demo.py
+import sys
+sys.path.insert(0, &#39;./hy3dshape&#39;)
+sys.path.insert(0, &#39;./hy3dpaint&#39;)
+
+from PIL import Image
+from hy3dshape.rembg import BackgroundRemover
+from hy3dshape.pipelines import Hunyuan3DDiTFlowMatchingPipeline
+import os
+
+from textureGenPipeline import Hunyuan3DPaintPipeline, Hunyuan3DPaintConfig
+
+try:
+    from torchvision_fix import apply_fix
+    apply_fix()
+except ImportError:
+    print(&#34;Warning: torchvision_fix module not found, proceeding without compatibility fix&#34;)                                      
+except Exception as e:
+    print(f&#34;Warning: Failed to apply torchvision fix: {e}&#34;)
+
+# shape
+model_path = &#39;tencent/Hunyuan3D-2.1&#39;
+pipeline_shapegen = Hunyuan3DDiTFlowMatchingPipeline.from_pretrained(model_path)
+
+image_path = &#39;assets/example_images/mmexportde235211f304fd83ec9d60e38c9f6f0b_1747975667632.png&#39;
+filename = os.path.basename(image_path).split(&#39;.&#39;)[0]
+image = Image.open(image_path).convert(&#34;RGBA&#34;)
+if image.mode == &#39;RGB&#39;:
+    rembg = BackgroundRemover()
+    image = rembg(image)
+save_folder = os.path.join(&#39;output&#39;, filename)
+os.makedirs(save_folder, exist_ok=True)
+mesh = pipeline_shapegen(image=image)[0]
+
+mesh.export(os.path.join(output_folder, filename &#43; &#39;.glb&#39;))
+
+# paint
+max_num_view = 6  # can be 6 to 9
+resolution = 512  # can be 768 or 512
+conf = Hunyuan3DPaintConfig(max_num_view, resolution)
+conf.realesrgan_ckpt_path = &#34;hy3dpaint/ckpt/RealESRGAN_x4plus.pth&#34;
+conf.multiview_cfg_path = &#34;hy3dpaint/cfgs/hunyuan-paint-pbr.yaml&#34;
+conf.custom_pipeline = &#34;hy3dpaint/hunyuanpaintpbr&#34;
+paint_pipeline = Hunyuan3DPaintPipeline(conf)
+
+output_mesh_path = filename &#43; &#39;_textured.glb&#39;
+output_mesh_path = paint_pipeline(
+    mesh_path = os.path.join(output_folder, filename &#43; &#39;.glb&#39;), 
+    image_path = image_path,
+    output_mesh_path = os.path.join(output_folder, output_mesh_path)
+)
+以及txt-to-3D_demo.py">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/hunyuan3d-2.1-pitfall/hunyuan3d-2.1-pitfall/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.b0d38cc42a3ce6bd7554a3d68896e97931c28a86e19b9be015dbbd0685dfd5fb.css" integrity="sha256-sNOMxCo85r11VKPWiJbpeTHCiobhm5vgFdu9BoXf1fs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/hunyuan3d-2.1-pitfall/hunyuan3d-2.1-pitfall/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="xmxhuihui Tech Blog (Alt + H)">xmxhuihui Tech Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/" title="home">
+                    <span>home</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="archives">
+                    <span>archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="search (Alt &#43; /)" accesskey=/>
+                    <span>search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Hunyuan3D-2.1 Pitfall
+    </h1>
+    <div class="post-meta"><span title='2025-06-20 13:33:23 +0100 BST'>June 20, 2025</span>
+
+</div>
+  </header> 
+  <div class="post-content"><p>Hunyuan3D-2.1加入了对PBR material的支持，以下是我在尝试该项目时遇到的问题和解决方法的总结。</p>
+<p>Troubleshooting:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ImportError: libSM.so.6: cannot open shared object file: No such file or directory
+</span></span></code></pre></div><p>Ubuntu系统上的解决方案：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt update
+</span></span><span style="display:flex;"><span>sudo apt install libsm6 libxrender1 libxext6
+</span></span></code></pre></div><p>Other install packages</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pip install sentencepiece
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># download the hy3dgen for txt2img from Hunyuan3D-2</span>
+</span></span></code></pre></div><p>分享一下改进后的img-to-3D demo.py</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span>sys<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>insert(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;./hy3dshape&#39;</span>)
+</span></span><span style="display:flex;"><span>sys<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>insert(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;./hy3dpaint&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> PIL <span style="color:#f92672">import</span> Image
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> hy3dshape.rembg <span style="color:#f92672">import</span> BackgroundRemover
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> hy3dshape.pipelines <span style="color:#f92672">import</span> Hunyuan3DDiTFlowMatchingPipeline
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> textureGenPipeline <span style="color:#f92672">import</span> Hunyuan3DPaintPipeline, Hunyuan3DPaintConfig
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">from</span> torchvision_fix <span style="color:#f92672">import</span> apply_fix
+</span></span><span style="display:flex;"><span>    apply_fix()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">except</span> <span style="color:#a6e22e">ImportError</span>:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Warning: torchvision_fix module not found, proceeding without compatibility fix&#34;</span>)                                      
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Warning: Failed to apply torchvision fix: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># shape</span>
+</span></span><span style="display:flex;"><span>model_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;tencent/Hunyuan3D-2.1&#39;</span>
+</span></span><span style="display:flex;"><span>pipeline_shapegen <span style="color:#f92672">=</span> Hunyuan3DDiTFlowMatchingPipeline<span style="color:#f92672">.</span>from_pretrained(model_path)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>image_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;assets/example_images/mmexportde235211f304fd83ec9d60e38c9f6f0b_1747975667632.png&#39;</span>
+</span></span><span style="display:flex;"><span>filename <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>basename(image_path)<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;.&#39;</span>)[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>image <span style="color:#f92672">=</span> Image<span style="color:#f92672">.</span>open(image_path)<span style="color:#f92672">.</span>convert(<span style="color:#e6db74">&#34;RGBA&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> image<span style="color:#f92672">.</span>mode <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;RGB&#39;</span>:
+</span></span><span style="display:flex;"><span>    rembg <span style="color:#f92672">=</span> BackgroundRemover()
+</span></span><span style="display:flex;"><span>    image <span style="color:#f92672">=</span> rembg(image)
+</span></span><span style="display:flex;"><span>save_folder <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(<span style="color:#e6db74">&#39;output&#39;</span>, filename)
+</span></span><span style="display:flex;"><span>os<span style="color:#f92672">.</span>makedirs(save_folder, exist_ok<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>mesh <span style="color:#f92672">=</span> pipeline_shapegen(image<span style="color:#f92672">=</span>image)[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>mesh<span style="color:#f92672">.</span>export(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(output_folder, filename <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.glb&#39;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># paint</span>
+</span></span><span style="display:flex;"><span>max_num_view <span style="color:#f92672">=</span> <span style="color:#ae81ff">6</span>  <span style="color:#75715e"># can be 6 to 9</span>
+</span></span><span style="display:flex;"><span>resolution <span style="color:#f92672">=</span> <span style="color:#ae81ff">512</span>  <span style="color:#75715e"># can be 768 or 512</span>
+</span></span><span style="display:flex;"><span>conf <span style="color:#f92672">=</span> Hunyuan3DPaintConfig(max_num_view, resolution)
+</span></span><span style="display:flex;"><span>conf<span style="color:#f92672">.</span>realesrgan_ckpt_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hy3dpaint/ckpt/RealESRGAN_x4plus.pth&#34;</span>
+</span></span><span style="display:flex;"><span>conf<span style="color:#f92672">.</span>multiview_cfg_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hy3dpaint/cfgs/hunyuan-paint-pbr.yaml&#34;</span>
+</span></span><span style="display:flex;"><span>conf<span style="color:#f92672">.</span>custom_pipeline <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hy3dpaint/hunyuanpaintpbr&#34;</span>
+</span></span><span style="display:flex;"><span>paint_pipeline <span style="color:#f92672">=</span> Hunyuan3DPaintPipeline(conf)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>output_mesh_path <span style="color:#f92672">=</span> filename <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;_textured.glb&#39;</span>
+</span></span><span style="display:flex;"><span>output_mesh_path <span style="color:#f92672">=</span> paint_pipeline(
+</span></span><span style="display:flex;"><span>    mesh_path <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(output_folder, filename <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.glb&#39;</span>), 
+</span></span><span style="display:flex;"><span>    image_path <span style="color:#f92672">=</span> image_path,
+</span></span><span style="display:flex;"><span>    output_mesh_path <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(output_folder, output_mesh_path)
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>以及txt-to-3D_demo.py</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span>sys<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>insert(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;./hy3dshape&#39;</span>)
+</span></span><span style="display:flex;"><span>sys<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>insert(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;./hy3dpaint&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> PIL <span style="color:#f92672">import</span> Image
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> hy3dshape.rembg <span style="color:#f92672">import</span> BackgroundRemover
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> hy3dshape.pipelines <span style="color:#f92672">import</span> Hunyuan3DDiTFlowMatchingPipeline
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> time
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> hy3dshape.utils <span style="color:#f92672">import</span> logger
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> hy3dpaint.convert_utils <span style="color:#f92672">import</span> create_glb_with_pbr_materials
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> gradio_app <span style="color:#f92672">import</span> export_mesh, randomize_seed_fn, quick_convert_with_obj2gltf
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> hy3dgen.text2image <span style="color:#f92672">import</span> HunyuanDiTPipeline
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> textureGenPipeline <span style="color:#f92672">import</span> Hunyuan3DPaintPipeline, Hunyuan3DPaintConfig
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> hy3dshape.pipelines <span style="color:#f92672">import</span> export_to_trimesh
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> hy3dshape <span style="color:#f92672">import</span> FaceReducer, FloaterRemover, DegenerateFaceRemover, MeshSimplifier, \
+</span></span><span style="display:flex;"><span>        Hunyuan3DDiTFlowMatchingPipeline
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">from</span> torchvision_fix <span style="color:#f92672">import</span> apply_fix
+</span></span><span style="display:flex;"><span>    apply_fix()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">except</span> <span style="color:#a6e22e">ImportError</span>:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;Warning: torchvision_fix module not found, proceeding without compatibility fix&#34;</span>)                                      
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Warning: Failed to apply torchvision fix: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_gen_shape</span>(
+</span></span><span style="display:flex;"><span>    caption<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>    image<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>    mv_image_front<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>    mv_image_back<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>    mv_image_left<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>    mv_image_right<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>    steps<span style="color:#f92672">=</span><span style="color:#ae81ff">50</span>,
+</span></span><span style="display:flex;"><span>    guidance_scale<span style="color:#f92672">=</span><span style="color:#ae81ff">7.5</span>,
+</span></span><span style="display:flex;"><span>    seed<span style="color:#f92672">=</span><span style="color:#ae81ff">1234</span>,
+</span></span><span style="display:flex;"><span>    octree_resolution<span style="color:#f92672">=</span><span style="color:#ae81ff">256</span>,
+</span></span><span style="display:flex;"><span>    check_box_rembg<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>    num_chunks<span style="color:#f92672">=</span><span style="color:#ae81ff">200000</span>,
+</span></span><span style="display:flex;"><span>    randomize_seed: bool <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># if not MV_MODE and image is None and caption is None:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     raise gr.Error(&#34;Please provide either a caption or an image.&#34;)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># if MV_MODE:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     if mv_image_front is None and mv_image_back is None \</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#         and mv_image_left is None and mv_image_right is None:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#         raise gr.Error(&#34;Please provide at least one view image.&#34;)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># image = {}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># if mv_image_front:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#     image[&#39;front&#39;] = mv_image_front</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># if mv_image_back:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#     image[&#39;back&#39;] = mv_image_back</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># if mv_image_left:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#     image[&#39;left&#39;] = mv_image_left</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># if mv_image_right:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#     image[&#39;right&#39;] = mv_image_right</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    seed <span style="color:#f92672">=</span> int(randomize_seed_fn(seed, randomize_seed))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    octree_resolution <span style="color:#f92672">=</span> int(octree_resolution)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> caption: print(<span style="color:#e6db74">&#39;prompt is&#39;</span>, caption)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># save_folder = gen_save_folder()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># stats = {</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     &#39;model&#39;: {</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#         &#39;shapegen&#39;: f&#39;{args.model_path}/{args.subfolder}&#39;,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#         &#39;texgen&#39;: f&#39;{args.texgen_model_path}&#39;,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     },</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     &#39;params&#39;: {</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#         &#39;caption&#39;: caption,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#         &#39;steps&#39;: steps,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#         &#39;guidance_scale&#39;: guidance_scale,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#         &#39;seed&#39;: seed,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#         &#39;octree_resolution&#39;: octree_resolution,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#         &#39;check_box_rembg&#39;: check_box_rembg,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#         &#39;num_chunks&#39;: num_chunks,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     }</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># }</span>
+</span></span><span style="display:flex;"><span>    time_meta <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> image <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>        start_time <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>            t2i_worker <span style="color:#f92672">=</span> HunyuanDiTPipeline(<span style="color:#e6db74">&#39;Tencent-Hunyuan/HunyuanDiT-v1.1-Diffusers-Distilled&#39;</span>)
+</span></span><span style="display:flex;"><span>            image <span style="color:#f92672">=</span> t2i_worker(caption)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">Exception</span>(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Text to 3D is disable. </span><span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span><span style="color:#e6db74">            Please enable it by `python gradio_app.py --enable_t23d`.&#34;</span>)
+</span></span><span style="display:flex;"><span>        time_meta[<span style="color:#e6db74">&#39;text2image&#39;</span>] <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time() <span style="color:#f92672">-</span> start_time
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># remove disk io to make responding faster, uncomment at your will.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># image.save(os.path.join(save_folder, &#39;input.png&#39;))</span>
+</span></span><span style="display:flex;"><span>    rmbg_worker <span style="color:#f92672">=</span> BackgroundRemover()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> MV_MODE:
+</span></span><span style="display:flex;"><span>        start_time <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> k, v <span style="color:#f92672">in</span> image<span style="color:#f92672">.</span>items():
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> check_box_rembg <span style="color:#f92672">or</span> v<span style="color:#f92672">.</span>mode <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;RGB&#34;</span>:
+</span></span><span style="display:flex;"><span>                img <span style="color:#f92672">=</span> rmbg_worker(v<span style="color:#f92672">.</span>convert(<span style="color:#e6db74">&#39;RGB&#39;</span>))
+</span></span><span style="display:flex;"><span>                image[k] <span style="color:#f92672">=</span> img
+</span></span><span style="display:flex;"><span>        time_meta[<span style="color:#e6db74">&#39;remove background&#39;</span>] <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time() <span style="color:#f92672">-</span> start_time
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> check_box_rembg <span style="color:#f92672">or</span> image<span style="color:#f92672">.</span>mode <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;RGB&#34;</span>:
+</span></span><span style="display:flex;"><span>            start_time <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()
+</span></span><span style="display:flex;"><span>            image <span style="color:#f92672">=</span> rmbg_worker(image<span style="color:#f92672">.</span>convert(<span style="color:#e6db74">&#39;RGB&#39;</span>))
+</span></span><span style="display:flex;"><span>            time_meta[<span style="color:#e6db74">&#39;remove background&#39;</span>] <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time() <span style="color:#f92672">-</span> start_time
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># remove disk io to make responding faster, uncomment at your will.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># image.save(os.path.join(save_folder, &#39;rembg.png&#39;))</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># image to white model</span>
+</span></span><span style="display:flex;"><span>    start_time <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    generator <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>Generator()
+</span></span><span style="display:flex;"><span>    generator <span style="color:#f92672">=</span> generator<span style="color:#f92672">.</span>manual_seed(int(seed))
+</span></span><span style="display:flex;"><span>    i23d_worker <span style="color:#f92672">=</span> Hunyuan3DDiTFlowMatchingPipeline<span style="color:#f92672">.</span>from_pretrained(
+</span></span><span style="display:flex;"><span>        args<span style="color:#f92672">.</span>model_path,
+</span></span><span style="display:flex;"><span>        subfolder<span style="color:#f92672">=</span>args<span style="color:#f92672">.</span>subfolder,
+</span></span><span style="display:flex;"><span>        use_safetensors<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>        device<span style="color:#f92672">=</span>args<span style="color:#f92672">.</span>device,
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    outputs <span style="color:#f92672">=</span> i23d_worker(
+</span></span><span style="display:flex;"><span>        image<span style="color:#f92672">=</span>image,
+</span></span><span style="display:flex;"><span>        num_inference_steps<span style="color:#f92672">=</span>steps,
+</span></span><span style="display:flex;"><span>        guidance_scale<span style="color:#f92672">=</span>guidance_scale,
+</span></span><span style="display:flex;"><span>        generator<span style="color:#f92672">=</span>generator,
+</span></span><span style="display:flex;"><span>        octree_resolution<span style="color:#f92672">=</span>octree_resolution,
+</span></span><span style="display:flex;"><span>        num_chunks<span style="color:#f92672">=</span>num_chunks,
+</span></span><span style="display:flex;"><span>        output_type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;mesh&#39;</span>
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    time_meta[<span style="color:#e6db74">&#39;shape generation&#39;</span>] <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time() <span style="color:#f92672">-</span> start_time
+</span></span><span style="display:flex;"><span>    logger<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#34;---Shape generation takes </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> seconds ---&#34;</span> <span style="color:#f92672">%</span> (time<span style="color:#f92672">.</span>time() <span style="color:#f92672">-</span> start_time))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    tmp_start <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()
+</span></span><span style="display:flex;"><span>    mesh <span style="color:#f92672">=</span> export_to_trimesh(outputs)[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    time_meta[<span style="color:#e6db74">&#39;export to trimesh&#39;</span>] <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time() <span style="color:#f92672">-</span> tmp_start
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># stats[&#39;number_of_faces&#39;] = mesh.faces.shape[0]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># stats[&#39;number_of_vertices&#39;] = mesh.vertices.shape[0]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># stats[&#39;time&#39;] = time_meta</span>
+</span></span><span style="display:flex;"><span>    main_image <span style="color:#f92672">=</span> image <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> MV_MODE <span style="color:#66d9ef">else</span> image[<span style="color:#e6db74">&#39;front&#39;</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> mesh, main_image, seed
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">generation_all</span>(
+</span></span><span style="display:flex;"><span>    caption<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>    image<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>    mv_image_front<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>    mv_image_back<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>    mv_image_left<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>    mv_image_right<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>    steps<span style="color:#f92672">=</span><span style="color:#ae81ff">50</span>,
+</span></span><span style="display:flex;"><span>    guidance_scale<span style="color:#f92672">=</span><span style="color:#ae81ff">7.5</span>,
+</span></span><span style="display:flex;"><span>    seed<span style="color:#f92672">=</span><span style="color:#ae81ff">1234</span>,
+</span></span><span style="display:flex;"><span>    octree_resolution<span style="color:#f92672">=</span><span style="color:#ae81ff">256</span>,
+</span></span><span style="display:flex;"><span>    check_box_rembg<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>    num_chunks<span style="color:#f92672">=</span><span style="color:#ae81ff">200000</span>,
+</span></span><span style="display:flex;"><span>    randomize_seed: bool <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>):
+</span></span><span style="display:flex;"><span>    start_time_0 <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()
+</span></span><span style="display:flex;"><span>    mesh, image, seed <span style="color:#f92672">=</span> _gen_shape(
+</span></span><span style="display:flex;"><span>        caption,
+</span></span><span style="display:flex;"><span>        image,
+</span></span><span style="display:flex;"><span>        mv_image_front<span style="color:#f92672">=</span>mv_image_front,
+</span></span><span style="display:flex;"><span>        mv_image_back<span style="color:#f92672">=</span>mv_image_back,
+</span></span><span style="display:flex;"><span>        mv_image_left<span style="color:#f92672">=</span>mv_image_left,
+</span></span><span style="display:flex;"><span>        mv_image_right<span style="color:#f92672">=</span>mv_image_right,
+</span></span><span style="display:flex;"><span>        steps<span style="color:#f92672">=</span>steps,
+</span></span><span style="display:flex;"><span>        guidance_scale<span style="color:#f92672">=</span>guidance_scale,
+</span></span><span style="display:flex;"><span>        seed<span style="color:#f92672">=</span>seed,
+</span></span><span style="display:flex;"><span>        octree_resolution<span style="color:#f92672">=</span>octree_resolution,
+</span></span><span style="display:flex;"><span>        check_box_rembg<span style="color:#f92672">=</span>check_box_rembg,
+</span></span><span style="display:flex;"><span>        num_chunks<span style="color:#f92672">=</span>num_chunks,
+</span></span><span style="display:flex;"><span>        randomize_seed<span style="color:#f92672">=</span>randomize_seed,
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    save_folder <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(<span style="color:#e6db74">&#39;output&#39;</span>, <span style="color:#e6db74">&#39;_&#39;</span><span style="color:#f92672">.</span>join(caption<span style="color:#f92672">.</span>split()))
+</span></span><span style="display:flex;"><span>    os<span style="color:#f92672">.</span>makedirs(save_folder, exist_ok<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    path <span style="color:#f92672">=</span> export_mesh(mesh, save_folder, textured<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    print(path)
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#39;=&#39;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">40</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># tmp_time = time.time()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># mesh = floater_remove_worker(mesh)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># mesh = degenerate_face_remove_worker(mesh)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># logger.info(&#34;---Postprocessing takes %s seconds ---&#34; % (time.time() - tmp_time))</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># stats[&#39;time&#39;][&#39;postprocessing&#39;] = time.time() - tmp_time</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    tmp_time <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()
+</span></span><span style="display:flex;"><span>    face_reduce_worker <span style="color:#f92672">=</span> FaceReducer()
+</span></span><span style="display:flex;"><span>    mesh <span style="color:#f92672">=</span> face_reduce_worker(mesh)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># path = export_mesh(mesh, save_folder, textured=False, type=&#39;glb&#39;)</span>
+</span></span><span style="display:flex;"><span>    path <span style="color:#f92672">=</span> export_mesh(mesh, save_folder, textured<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;obj&#39;</span>) <span style="color:#75715e"># 这样操作也会 core dump</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    logger<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#34;---Face Reduction takes </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> seconds ---&#34;</span> <span style="color:#f92672">%</span> (time<span style="color:#f92672">.</span>time() <span style="color:#f92672">-</span> tmp_time))
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># stats[&#39;time&#39;][&#39;face reduction&#39;] = time.time() - tmp_time</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    tmp_time <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    text_path <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(save_folder, <span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;textured_mesh.obj&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    conf <span style="color:#f92672">=</span> Hunyuan3DPaintConfig(max_num_view<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span>, resolution<span style="color:#f92672">=</span><span style="color:#ae81ff">768</span>)
+</span></span><span style="display:flex;"><span>    conf<span style="color:#f92672">.</span>realesrgan_ckpt_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hy3dpaint/ckpt/RealESRGAN_x4plus.pth&#34;</span>
+</span></span><span style="display:flex;"><span>    conf<span style="color:#f92672">.</span>multiview_cfg_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hy3dpaint/cfgs/hunyuan-paint-pbr.yaml&#34;</span>
+</span></span><span style="display:flex;"><span>    conf<span style="color:#f92672">.</span>custom_pipeline <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hy3dpaint/hunyuanpaintpbr&#34;</span>
+</span></span><span style="display:flex;"><span>    tex_pipeline <span style="color:#f92672">=</span> Hunyuan3DPaintPipeline(conf)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    path_textured <span style="color:#f92672">=</span> tex_pipeline(mesh_path<span style="color:#f92672">=</span>path, image_path<span style="color:#f92672">=</span>image, output_mesh_path<span style="color:#f92672">=</span>text_path, save_glb<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>    logger<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#34;---Texture Generation takes </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> seconds ---&#34;</span> <span style="color:#f92672">%</span> (time<span style="color:#f92672">.</span>time() <span style="color:#f92672">-</span> tmp_time))
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># stats[&#39;time&#39;][&#39;texture generation&#39;] = time.time() - tmp_time</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    tmp_time <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Convert textured OBJ to GLB using obj2gltf with PBR support</span>
+</span></span><span style="display:flex;"><span>    glb_path_textured <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(save_folder, <span style="color:#e6db74">&#39;textured_mesh.glb&#39;</span>)
+</span></span><span style="display:flex;"><span>    conversion_success <span style="color:#f92672">=</span> quick_convert_with_obj2gltf(path_textured, glb_path_textured)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    logger<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#34;---Convert textured OBJ to GLB takes </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> seconds ---&#34;</span> <span style="color:#f92672">%</span> (time<span style="color:#f92672">.</span>time() <span style="color:#f92672">-</span> tmp_time))
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># stats[&#39;time&#39;][&#39;convert textured OBJ to GLB&#39;] = time.time() - tmp_time</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># stats[&#39;time&#39;][&#39;total&#39;] = time.time() - start_time_0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># model_viewer_html_textured = build_model_viewer_html(save_folder, </span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#                                                      height=HTML_HEIGHT, </span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#                                                      width=HTML_WIDTH, textured=True)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> args<span style="color:#f92672">.</span>low_vram_mode:
+</span></span><span style="display:flex;"><span>        torch<span style="color:#f92672">.</span>cuda<span style="color:#f92672">.</span>empty_cache()
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># return (</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     gr.update(value=path),</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     gr.update(value=glb_path_textured),</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     model_viewer_html_textured,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     stats,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#     seed,</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># )</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__<span style="color:#f92672">==</span><span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">import</span> argparse
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    parser <span style="color:#f92672">=</span> argparse<span style="color:#f92672">.</span>ArgumentParser()
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;--model_path&#34;</span>, type<span style="color:#f92672">=</span>str, default<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;tencent/Hunyuan3D-2.1&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;--subfolder&#34;</span>, type<span style="color:#f92672">=</span>str, default<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;hunyuan3d-dit-v2-1&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;--texgen_model_path&#34;</span>, type<span style="color:#f92672">=</span>str, default<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;tencent/Hunyuan3D-2.1&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;--caption&#39;</span>, type<span style="color:#f92672">=</span>str, default<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;a lovely rabbit eating carrots&#34;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;--device&#39;</span>, type<span style="color:#f92672">=</span>str, default<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;cuda&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;--low_vram_mode&#39;</span>, action<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;store_true&#39;</span>)
+</span></span><span style="display:flex;"><span>    args <span style="color:#f92672">=</span> parser<span style="color:#f92672">.</span>parse_args()
+</span></span><span style="display:flex;"><span>    caption <span style="color:#f92672">=</span> args<span style="color:#f92672">.</span>caption
+</span></span><span style="display:flex;"><span>    MV_MODE <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>    generation_all(caption<span style="color:#f92672">=</span>caption)
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">xmxhuihui Tech Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
