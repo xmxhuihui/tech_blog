@@ -161,3 +161,65 @@ class Report:
 | 方法不使用 `self` 或 `cls`   | `@staticmethod` ✅ |
 | 方法使用 `self`（访问或修改实例属性） | 普通方法 ✅            |
 | 方法使用 `cls`（构造类、访问类变量）  | `@classmethod` ✅  |
+
+# 三种方法的使用场景
+### ✅ 普通方法（def method(self)）
+* 第一个参数是 self，表示实例本身。
+
+* 适用于：需要访问或操作实例属性、实例方法的情况。
+
+例如：
+
+```python
+class A:
+    def __init__(self, x):
+        self.x = x
+
+    def print_x(self):
+        print(self.x)  # 操作的是实例属性
+```
+### ✅ 类方法（@classmethod def method(cls)）
+* 第一个参数是 cls，表示类本身。
+
+* 适用于：
+
+    * 访问或修改类属性
+
+    * 工厂方法（根据不同参数返回类的不同实例）
+
+    * 操作和类本身相关但不依赖具体实例的逻辑
+
+* 与“是否是 private 属性”无直接关系。
+
+例如：
+
+``` python
+class A:
+    _count = 0  # 类属性（可以是private）
+
+    @classmethod
+    def increment(cls):
+        cls._count += 1
+```
+### ✅ 静态方法（@staticmethod def method()）
+* 没有 self 或 cls 参数。
+
+* 适用于：
+
+    * 与类和实例都无关的辅助方法，只是逻辑上归属于这个类。
+
+    * 比如格式转换函数、校验函数等。
+
+```python
+class A:
+    @staticmethod
+    def add(a, b):
+        return a + b
+```
+
+## 总结
+| 方法类型 | 是否有 `self` | 是否有 `cls` | 主要用途            |
+| ---- | ---------- | --------- | --------------- |
+| 普通方法 | ✅          | ❌         | 操作实例状态（属性或方法）   |
+| 类方法  | ❌          | ✅         | 操作类状态（类属性、构造对象） |
+| 静态方法 | ❌          | ❌         | 工具函数、逻辑辅助，无需状态  |
