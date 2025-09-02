@@ -28,12 +28,13 @@ Anaconda Prompt 本质上是一个 cmd.exe，启动时会调用 conda 的初始�
 
 /K 参数会执行完命令后保持终端打开
 
-activate.bat 会激活 base 环境，你也可以指定其他 conda 环境，例如：
+activate.bat 会激活 base 环境，你也可以指定其他 conda 环境，通过修改：
+```bash
+"python.defaultInterpreterPath": "D:\\anaconda3\\envs\\Pytorch\\python.exe",
+```
 
-```"C:\\Users\\YourUser\\Anaconda3\\Scripts\\activate.bat myenv"```
 
-
-然后在 VS Code 终端里点击 下拉菜单 → 选择 Anaconda Prompt 就可以了。
+然后在 VSCode ```run terminal → terminal → 下拉菜单 → Anaconda Prompt``` 就可以了。
 
 ### 3️⃣ 添加 Developer PowerShell for VS
 
