@@ -5,6 +5,12 @@ title: 'Hunyuan3D-2.1 Pitfall'
 ---
 Hunyuan3D-2.1加入了对PBR material的支持，以下是我在尝试该项目时遇到的问题和解决方法的总结。
 
+bpy installation in requirements.txt (for python==3.10)
+```
+# comment the original line of bpy, and install npy solely in the terminal by:
+
+pip install bpy==4.0 --extra-index-url https://download.blender.org/pypi/
+```
 Troubleshooting:
 ```bash
 ImportError: libSM.so.6: cannot open shared object file: No such file or directory
