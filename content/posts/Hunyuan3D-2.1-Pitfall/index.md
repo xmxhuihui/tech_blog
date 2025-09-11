@@ -26,6 +26,11 @@ pip install sentencepiece
 # download the hy3dgen for txt2img from Hunyuan3D-2
 ```
 
+Troubleshooting: Installation error when installing ```custom rasterizer```
+```bash
+cd hy3dpaint/custom_rasterizer
+python setup.py install
+```
 分享一下改进后的img-to-3D demo.py
 ```python
 import sys

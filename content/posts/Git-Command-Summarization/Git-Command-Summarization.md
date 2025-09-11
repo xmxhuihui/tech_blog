@@ -60,3 +60,80 @@ git clone <仓库URL> –branch <分支名> –single-branch
 git branch -r
 git checkout -b <本地分支名> origin/<远程分支名>
 ```
+
+# Q: 万一以后不小心 add/commit 了大文件，如何避免 push 到 GitHub
+## 1️⃣ 还没 push（只是 add 或 commit）
+### 情况 A：只 add 到暂存区
+``` bash
+git reset <大文件路径>
+```
+这会把文件从暂存区移除，但保留工作区文件。
+### 情况 B：已经 commit（还没 push）
+git rm --cached <大文件路径>    # 从 Git 管理中移除
+git commit --amend --no-edit    # 修改最近一次 commit，把大文件去掉
+## 2️⃣ 已经 commit 但还没 push（多条 commit）
+使用 交互式 rebase：
+```bash
+git rebase -i HEAD~N
+```
+
+* N 是包含大文件的 commit 数量
+
+* 把包含大文件的 commit 改为 edit 或 squash，然后 git rm --cached <大文件> 再 git commit --amend
+
+* 完成后 git rebase --continue
+
+* 最后 push（可选 --force 如果远程有历史需要覆盖）
+
+## 3️⃣ 已经 commit 并 push（历史里有大文件）
+GitHub 会拒绝 push 超过 100MB 文件，如果不想 push：
+### 方法 A：从历史彻底删除大文件
+```bash
+pip install git-filter-repo
+git filter-repo --path <大文件路径> --invert-paths
+git push origin main --force
+```
+* --invert-paths 会从历史中移除大文件
+
+* 强制 push 后远程不会再有大文件
+### 方法 B：使用 Git LFS
+如果你希望保留大文件：
+```bash
+git lfs install
+git lfs track "*.pt" "*.pth"
+git add .gitattributes
+git add <大文件路径>
+git commit -m "Move large files to Git LFS"
+git push origin main
+```
+LFS 会把大文件单独存储，避免超过 100MB 限制
+## 4️⃣ 防止以后再误 add/commit 大文件
+1. 在仓库根目录创建 .gitignore：
+```
+*.pt
+*.pth
+*.zip
+*.bin
+```
+2. 安装 Git 钩子（pre-commit hook）限制大文件：
+```bash
+# 在 .git/hooks/pre-commit 文件里添加
+#!/bin/sh
+maxsize=100000000  # 100MB
+for file in $(git diff --cached --name-only); do
+    size=$(stat -c%s "$file")
+    if [ "$size" -gt $maxsize ]; then
+        echo "Error: $file is larger than 100MB"
+        exit 1
+    fi
+done
+```
+可阻止 add/commit 超过阈值的大文件
+## 💡总结
+* 还没 push → git reset / git rm --cached / git commit --amend
+
+* 多条 commit 还没 push → git rebase -i + 移除大文件
+
+* 历史里有大文件 / 已 push → git filter-repo --invert-paths 或 Git LFS
+
+* 预防未来 → .gitignore + pre-commit hook
