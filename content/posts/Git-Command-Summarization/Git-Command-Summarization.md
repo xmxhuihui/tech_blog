@@ -137,3 +137,17 @@ done
 * 历史里有大文件 / 已 push → git filter-repo --invert-paths 或 Git LFS
 
 * 预防未来 → .gitignore + pre-commit hook
+
+# git restore和git reset用法区别
+```bash
+git restore <file>
+```
+这个指令可以使被改变的文件回退到编辑之前，上一个commit保存的文件，改变的是本地文件。
+```bash
+git reset HEAD <file>
+```
+这个指令会撤销暂存区的修改，也就是说不会被add。这条指令相当于
+```bash
+git restore --staged <file>
+```
+HEAD就是当前commit以后保存的状态，注意区分工作区/暂存区/HEAD
