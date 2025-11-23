@@ -70,3 +70,4 @@ title: 'Blender Camera Animation'
 E快捷键挤出，Ctrl + B 倒角边    
 注意cycles渲染的时候，如果速度慢，查看偏好设置→系统中的cycles渲染引擎是否选中CUDA。     
 勾选动态采样，减少最大采样数，设置最小采样数（32~64），勾选降噪下的使用GPU，加快渲染速度。
+shift + C还原锚点到世界中心

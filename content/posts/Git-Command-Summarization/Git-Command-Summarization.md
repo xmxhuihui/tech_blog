@@ -39,6 +39,12 @@ git add .
 git commit -m 'commit_message'
 git push/pull origin local_branch:remote_branch
 ```
+### 删去远程仓库中的文件，但是本地保留
+如果以前提交过一些文件到远程仓库，但现在想删去的话：
+1. 先在.gitignore中添加文件/文件夹路径
+2. ```git rm --cached <path>```删去git对该路径文件的跟踪
+3. git commit
+4. git push
 
 # 分支操作
 ```bash
@@ -151,3 +157,4 @@ git reset HEAD <file>
 git restore --staged <file>
 ```
 HEAD就是当前commit以后保存的状态，注意区分工作区/暂存区/HEAD
+
