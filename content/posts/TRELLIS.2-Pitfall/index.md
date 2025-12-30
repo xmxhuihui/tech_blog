@@ -20,6 +20,7 @@ Traceback (most recent call last):
 AttributeError: module 'PIL._webp' has no attribute 'HAVE_WEBPANIM'
 ```
 Solution:
-1. ```apt-get update```
-2. ```apt-get install -y libwebp-dev```
-3. ```pip install -U pillow```
+1. ```glb.export("sample.glb", extension_webp=False)```
+2. ```apt-get update```
+3. ```apt-get install -y libwebp-dev```
+4. ```pip install -U pillow```
