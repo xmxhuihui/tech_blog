@@ -10,5 +10,5 @@ int& ref = a // 声名引用ref，用作a的别名
 ```
 
 ### Use when initialization and passing into a function
-Pointer: 取一个指针的地址
+Pointer: 取一个指针的地址，一个类对象的指针，可以用```->```来调取属性和方法。
 Reference: 取相同的变量，而不是复制一个新的
