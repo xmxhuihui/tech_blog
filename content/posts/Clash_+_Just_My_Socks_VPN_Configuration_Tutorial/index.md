@@ -27,7 +27,7 @@ Here I use this website to transfer the link.
 https://bianyuan.xyz/
 ![Transfer](Transfer.png)
 
-Here I use the Clash Client, so choose the basic mode, and print the link into the subscription link box, then click the "generate subscription link" button (The first red button on the left top).
+Here I use the Clash Client, so choose the basic mode, and print the link into the subscription link box, then click the "generate subscription link" button (The first red button on the left top). The generated link should end up with ```.yaml``` or ```.yml```. 
 
 ### Generate the proxy
 Paste the generated link into the URL box on the top.
