@@ -5,7 +5,7 @@ title: 'Video Frame Interpolation and Super Resolution'
 ---
 
 # Video Frame Interpolation
-Here I used Practical_RIFE on Github. Official website:
+Here I used Practical_RIFE on Github. Official website:https://github.com/hzwer/Practical-RIFE
 
 If it reports the error of ffmpeg while running video_interpolate.py, just install the ffmpeg in the official website. A latest version of essential contents zip file will be sufficient.
 
@@ -33,5 +33,15 @@ Originally the fps was 13.8xxx, which was a irregular value. This command change
 ```bash
 python inference_video.py --video=input_15fps_raw.mp4 --multi=4
 ```
-
+If the camera motion is evident, GMFSS could be a more powerful AI tool for interpolation.
+Official website: https://github.com/98mxr/GMFSS_Fortuna
 # Video graphic super-resolution
+For 3D real video/images, it is recommended to use Real_ESRGAN.
+Official website: https://github.com/xinntao/Real-ESRGAN
+
+If ffmpeg not installed error reported, even if you installed ffmpeg globally, do ```pip install ffmpeg``` in the environment.
+
+Remember to assign a model_name when running the inference.
+```bash
+python inference_realesrgan_video.py --model_name=RealESRGAN_x4plus --input=./inputs/video/xxx.mp4
+```
