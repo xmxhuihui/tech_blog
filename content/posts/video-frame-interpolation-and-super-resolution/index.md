@@ -43,5 +43,12 @@ If ffmpeg not installed error reported, even if you installed ffmpeg globally, d
 
 Remember to assign a model_name when running the inference.
 ```bash
-python inference_realesrgan_video.py --model_name=realesr-animevideov3 --input=./inputs/video/xxx.mp4
+python inference_realesrgan_video.py --model_name=xxx --input=./inputs/video/xxx.mp4
 ```
+Options for model_name:
+* RealESRGAN_x4plus
+* RealESRNet_x4plus
+* RealESRGAN_x4plus_anime_6B
+* RealESRGAN_x2plus
+* realesr-animevideov3
+* realesr-general-x4v3
