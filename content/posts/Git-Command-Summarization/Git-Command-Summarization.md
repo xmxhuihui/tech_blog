@@ -21,8 +21,8 @@ git remote -v / git remote remove origin
 ```
 ### 创建新分支
 ```bash
-git branch 查看本地分支
-git branch -a 查看远程、本地所有分支
+git branch # 查看本地分支
+git branch -a # 查看远程、本地所有分支
 git branch -m new_branch_name
 ```
 ### 创建空分支
@@ -71,27 +71,34 @@ git checkout -b <本地分支名> origin/<远程分支名>
 ## 1️⃣ 还没 push（只是 add 或 commit）
 ### 情况 A：只 add 到暂存区
 ``` bash
-git reset <大文件路径>
+git reset path/to/big.file
+git restore --staged path/to/big.file
 ```
 这会把文件从暂存区移除，但保留工作区文件。
 ### 情况 B：已经 commit（还没 push）
-git rm --cached <大文件路径>    # 从 Git 管理中移除
-git commit --amend --no-edit    # 修改最近一次 commit，把大文件去掉
-## 2️⃣ 已经 commit 但还没 push（多条 commit）
-<span style="color:red">使用这个方法之前，一定要注意，如果你有其他文件没保存在git上，千万别rebase，东西会丢。</span>
+```bash
+git reset --soft HEAD~1
+git restore --staged path/to/big.file
+```
+撤回多条提交：
+```bash
+git reset --soft HEAD~N
+git restore --staged path/to/big.file
+```
+要从暂存区中移除所有文件：
+```bash
+git restore --staged .
+```
+然后可以重新add并提交了。以后记住add之前先用git status，查看要提交的文件中，大文件是否已经放入了.gitignore文件中。
+## 2️⃣ 合并最后几条提交
+<span style="color:red">使用这个方法之前，一定要注意，如果你有其他文件没保存在git上，千万别rebase，东西会丢。铁律就是，rebase之前一定git status的```working tree clean```，否则绝对不要rebase。执行这个命令之前最好在本地备份，比如copy或者做一个压缩包</span>
 
 使用 交互式 rebase：
 ```bash
 git rebase -i HEAD~N
 ```
 
-* N 是包含大文件的 commit 数量
-
-* 把包含大文件的 commit 改为 edit 或 squash，然后 git rm --cached <大文件> 再 git commit --amend
-
-* 完成后 git rebase --continue
-
-* 最后 push（可选 --force 如果远程有历史需要覆盖）
+这个是恢复到合并最后多条提交，但项目是最后一条提交的版本
 
 ## 3️⃣ 已经 commit 并 push（历史里有大文件）
 GitHub 会拒绝 push 超过 100MB 文件，如果不想 push：
@@ -118,10 +125,26 @@ LFS 会把大文件单独存储，避免超过 100MB 限制
 ## 4️⃣ 防止以后再误 add/commit 大文件
 1. 在仓库根目录创建 .gitignore：
 ```
-*.pt
+# checkpoints / weights
+*.ckpt
 *.pth
-*.zip
-*.bin
+*.pt
+*.safetensors
+*.onnx
+
+# outputs
+outputs/
+checkpoints/
+runs/
+wandb/
+logs/
+
+# caches
+__pycache__/
+*.pyc
+.cache/
+.ipynb_checkpoints/
+.DS_Store
 ```
 2. 安装 Git 钩子（pre-commit hook）限制大文件：
 ```bash
