@@ -78,6 +78,8 @@ git reset <大文件路径>
 git rm --cached <大文件路径>    # 从 Git 管理中移除
 git commit --amend --no-edit    # 修改最近一次 commit，把大文件去掉
 ## 2️⃣ 已经 commit 但还没 push（多条 commit）
+<span style="color:red">使用这个方法之前，一定要注意，如果你有其他文件没保存在git上，千万别rebase，东西会丢。</span>
+
 使用 交互式 rebase：
 ```bash
 git rebase -i HEAD~N
