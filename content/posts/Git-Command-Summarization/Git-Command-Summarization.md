@@ -89,7 +89,19 @@ git restore --staged path/to/big.file
 ```bash
 git restore --staged .
 ```
+<div style="color:yellow">
+注意：git reset --soft会撤销提交但保留暂存区和工作区状态(staged)；
+
+git reset --mixed 会撤销提交并取消暂存，但工作区被保留(unstaged)；
+
+git reset --hard会将工作区状态一起回滚（危险）</div>
+
 然后可以重新add并提交了。以后记住add之前先用git status，查看要提交的文件中，大文件是否已经放入了.gitignore文件中。
+最好的记忆办法还是：reset回滚commit提交，restore恢复工作区文件到指定的状态
+```bash
+git reflog # 查看所有操作历史(add, commit, push)
+git restore --source=<commit编号>
+```
 ## 2️⃣ 合并最后几条提交
 <span style="color:red">使用这个方法之前，一定要注意，如果你有其他文件没保存在git上，千万别rebase，东西会丢。铁律就是，rebase之前一定git status的```working tree clean```，否则绝对不要rebase。执行这个命令之前最好在本地备份，比如copy或者做一个压缩包</span>
 
