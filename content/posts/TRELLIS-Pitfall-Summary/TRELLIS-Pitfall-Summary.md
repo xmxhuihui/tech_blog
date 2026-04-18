@@ -27,3 +27,5 @@ python setup.py install --user
 cd ../emd
 python setup.py install --user
 cd ../../../
+
+pip install peft
