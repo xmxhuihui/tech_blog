@@ -23,6 +23,7 @@ pip install git+https://github.com/NVlabs/nvdiffrast.git --no-build-isolation
 pip install -r requirements.txt 
 
 conda install pytorch3d==0.7.5 -c pytorch3d
+conda install -c conda-forge igl
 ```
 requirements.txt:
 ```lightning==2.0.0
@@ -40,7 +41,7 @@ matplotlib
 imageio>=2.28.0
 imageio[ffmpeg]
 # git+https://github.com/NVlabs/nvdiffrast.git
-libigl
+# libigl
 xatlas
 trimesh[easy]
 networkx
@@ -73,3 +74,6 @@ controlnet_aux
 # dreamsim
 dreamsim
 ```
+
+Besides, to use DeepFloyd model, need to get access to the model in Huggingface and login in teminal.
+https://huggingface.co/DeepFloyd/IF-I-XL-v1.0
