@@ -10,3 +10,6 @@ pip install git+https://github.com/openai/shap-e.git
 pip install einops
 pip install huggingface-hub==0.13.4 gradio==3.41.2 diffusers==0.15.1 transformers==4.26.1 accelerate==0.18.0 # replace in requirements.txt
 ```
+
+stable diffusion model key shall be replaced by ```Manojb/stable-diffusion-2-1-base```
+The version of ```diff-gaussian-rasterization``` shall be replaced by previous version with rasterizer that keeps alpha return.
