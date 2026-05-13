@@ -22,7 +22,7 @@ pip install git+https://github.com/NVlabs/nvdiffrast.git --no-build-isolation
 
 pip install -r requirements.txt 
 
-conda install pytorch3d==0.7.5 -c pytorch3d
+conda install pytorch3d==0.7.5 -c pytorch3d -c conda-forge -c defaults
 conda install -c conda-forge igl
 ```
 requirements.txt:
