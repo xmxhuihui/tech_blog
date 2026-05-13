@@ -34,13 +34,28 @@ pip install xxx -i <清华、阿里镜像站 e.g.https://pypi.tuna.tsinghua.edu.
 ```bash
 pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 ```
-### git下载一个仓库并安装
+
+## git下载一个仓库并pip安装
 ```bash
 pip install git+https://gh.llkk.cc/https://github.com/<user>/<repo>.git
 pip install git+https://hub.fastgit.org/<user>/<repo>.git
 pip install git+https://github.com.cnpmjs.org/<user>/<repo>.git
 ```
+注意：问题在于，这些仓库可能有submodules，但是上面的写法，会导致子模块还是走主站而非镜像站。
 
+### 通用做法：
+```bash
+vim gitconfig-mirror
+export GIT_CONFIG_GLOBAL=./gitconfig-mirror
+```
+gitconfig-mirror:
+```
+[url "https://gh.llkk.cc/https://github.com/"]
+    insteadOf = https://github.com/
+    insteadOf = git@github.com:
+    insteadOf = ssh://git@github.com/
+```
+然后直接```pip install https://github.com/xxx```安装主站仓库，所有的仓库和子模块都会自动跳转。
 ### Huggingface settings
 ```bash
 https://hf-mirror.com/<repo_id>/resolve/<branch>/<filename>
@@ -72,3 +87,35 @@ huggingface-cli download \
     --local-dir-use-symlinks False
 
 ```
+备注：autodl上的conda是被污染的，经常执行```conda install -c conda-forge```会报解析错误或者卡住，这时候需要自己手动安装一个纯净版的miniconda到workspace/autodl-tmp目录下。
+```bash
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh -p /workspace/miniconda3
+```
+如果是conda安装，先找到配置文件：
+```bash
+conda config --show-sources
+```
+通常会看到类似：
+```
+==> /home/xxx/.condarc <==
+```
+用vim打开：
+```bash
+vim ~/.condarc
+```
+你会看到类似：
+```
+channels:
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge
+  - defaults
+```
+直接删除或者添加：
+```bash
+  - conda-forge
+  - defaults
+```
+注意：顺序很重要，上面的优先级更高。
+
+一般来说重装完miniconda以后可以不添加，直接```pip install -c conda-forge xxx```，明写channel名称。
