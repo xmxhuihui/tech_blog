@@ -34,7 +34,11 @@ pip install xxx -i <清华、阿里镜像站 e.g.https://pypi.tuna.tsinghua.edu.
 ```bash
 pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 ```
-
+### 下载torch
+国内的话，上交有直接复制了pytorch主站的镜像，但是因为还有一些其他的附加包要安装，所以这里其他的包还是走比如清华或者阿里镜像站。
+```bash
+pip install torch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 --index-url https://mirror.sjtu.edu.cn/pytorch-wheels/cu118 --extra-index-url https://pypi.tuna.tsinghua.edu.cn/simple
+```
 ## git下载一个仓库并pip安装
 ```bash
 pip install git+https://gh.llkk.cc/https://github.com/<user>/<repo>.git
