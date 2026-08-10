@@ -6,7 +6,7 @@ title: 'TRELLIS Pitfall Summary'
 # Environment installation
 ## trellis
 ```bash
-. ./setup.sh --basic --xformers --diffoctreerast --spconv --mipgaussian --kaolin --nvdiffrast	
+. ./setup.sh --basic --xformers --flash-attn --diffoctreerast --spconv --mipgaussian --kaolin --nvdiffrast	
 pip install wandb
 pip install kaolin -f https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.4.0_cu118.html
 pip install tensorboard pandas lpips
