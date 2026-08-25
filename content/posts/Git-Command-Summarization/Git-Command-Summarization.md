@@ -19,17 +19,24 @@ git remote rename <old-name> <new-name>
 ```bash
 git remote -v / git remote remove origin
 ```
-### 创建新分支
+### 修改分支名
 ```bash
 git branch # 查看本地分支
 git branch -a # 查看远程、本地所有分支
 git branch -m new_branch_name
 ```
-### 创建空分支
+### 创建空分支（老写法）
 ```bash
 git checkout --orphan new_branch_name
 git reset & git clean -fdx
 git commit --allow-empty -m "Initial commit"
+```
+### 创建空分支（新写法）
+```bash
+git switch -c <new_branch_name> # 创建并切换分支
+# or
+git branch <new_branch_name> # 仅创建不切换
+git switch <new_branch_name> # 切换到分支
 ```
 ### 提交仓库
 ```bash
